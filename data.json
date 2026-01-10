@@ -1,0 +1,110 @@
+{
+  "stages": [
+    {
+      "id": 1768042281552,
+      "trackName": "Liolya",
+      "trackImg": "track3.png",
+      "pilots": [
+        {
+          "name": "Danylo",
+          "photo": "driver1.jpg",
+          "totalPoints": 245,
+          "carPhotos": [
+            "car4.jpg",
+            "car2.jpg",
+            "car2.jpg",
+            "AUDI_RS5_DTM.jpeg",
+            "car4.jpg"
+          ],
+          "pointsHistory": [
+            50,
+            45,
+            50,
+            50,
+            50
+          ]
+        },
+        {
+          "name": "Igor",
+          "photo": "driver2.jpg",
+          "totalPoints": 185,
+          "carPhotos": [
+            "car2.jpg",
+            "car1.jpg",
+            "car4.jpg",
+            "car4.jpg",
+            "car2.jpg"
+          ],
+          "pointsHistory": [
+            35,
+            35,
+            35,
+            45,
+            35
+          ]
+        },
+        {
+          "name": "Vasyl",
+          "photo": "driver4.jpg",
+          "totalPoints": 220,
+          "carPhotos": [
+            "car3.jpg",
+            "car4.jpg",
+            "car2.jpg",
+            "car2.jpg",
+            "Ferrari_458_GT2.jpeg"
+          ],
+          "pointsHistory": [
+            45,
+            50,
+            45,
+            40,
+            40
+          ]
+        },
+        {
+          "name": "Volodymyr",
+          "photo": "driver3.jpg",
+          "totalPoints": 205,
+          "carPhotos": [
+            "car1.jpg",
+            "car3.jpg",
+            "car3.jpg",
+            "car1.jpg",
+            "AUDI_RS5_DTM.jpeg"
+          ],
+          "pointsHistory": [
+            40,
+            45,
+            40,
+            35,
+            45
+          ]
+        }
+      ],
+      "racesCount": 5,
+      "videos": [
+        "IMG_2923.mp4",
+        "IMG_2923.mp4"
+      ]
+    }
+  ],
+  "pilots_directory": [
+    {
+      "name": "Danylo",
+      "photo": "driver1.jpg"
+    },
+    {
+      "name": "Igor",
+      "photo": "driver2.jpg"
+    },
+    {
+      "name": "Volodymyr",
+      "photo": "driver3.jpg"
+    },
+    {
+      "name": "Vasyl",
+      "photo": "driver4.jpg"
+    }
+  ]
+}

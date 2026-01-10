@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrera Go - Racing Stats</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Чемпіонат Carrera 2026</h1>
+    </header>
+
+    <div class="main-layout">
+        <aside class="global-standings">
+            <h3>Загальний залік</h3>
+            <div id="overall-leaderboard"></div>
+            <button onclick="location.href='admin.html'" style="margin-top:20px; width:100%; padding:10px; background: #333; color:white; border:none; border-radius:5px; cursor:pointer;">Адмін-панель</button>
+        </aside>
+
+        <main id="leaderboard"></main>
+    </div>
+
+    <div id="carModal" class="modal" onclick="closeModal()">
+        <span class="close-modal">&times;</span>
+        <div class="modal-content-wrapper" onclick="event.stopPropagation()">
+            <div class="modal-photo-container">
+                <img id="bigCarImg" src="" alt="Car Image">
+            </div>
+            <div id="modal-caption"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
