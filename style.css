@@ -8,28 +8,46 @@
 body { background-color: var(--carrera-black); color: white; font-family: 'Arial Black', sans-serif; margin: 0; }
 header { text-align: center; border-bottom: 5px solid var(--carrera-red); padding: 20px; background: #000; }
 
-/* ДЕСКТОП */
+/* ДЕСКТОПНИЙ ЛЕЙАУТ */
 .main-layout { display: flex; max-width: 1750px; margin: 20px auto; gap: 30px; padding: 0 20px; }
-.global-standings { flex: 0 0 280px; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border-top: 5px solid var(--carrera-red); height: fit-content; position: sticky; top: 20px; }
+
+.global-standings {
+    flex: 0 0 280px; background: rgba(255, 255, 255, 0.05);
+    padding: 20px; border-radius: 12px; border-top: 5px solid var(--carrera-red);
+    height: fit-content; position: sticky; top: 20px;
+}
 .standings-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #333; }
 .standings-item.leader { color: var(--gold); }
+
 #leaderboard { flex: 1; }
 
-.stage-container { background: rgba(255,255,255,0.02); padding: 30px; border-radius: 20px; margin-bottom: 40px; border-left: 8px solid var(--carrera-red); }
+.stage-container { 
+    background: rgba(255, 255, 255, 0.02); padding: 30px; border-radius: 20px; 
+    margin-bottom: 40px; border-left: 8px solid var(--carrera-red); 
+}
+
 .stage-info-row { display: flex; gap: 30px; margin: 25px 0; align-items: flex-start; }
 .track-block { flex: 0 0 400px; }
 .stage-track-img { width: 100%; border: 2px solid #444; border-radius: 12px; }
 
 .stage-car-gallery { flex: 1; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; border: 1px solid #333; }
 .car-gallery-grid { display: flex; flex-wrap: wrap; gap: 15px; }
+
+/* КАРТКИ МАШИН ТА ЕФЕКТИ */
 .gallery-item { position: relative; width: 140px; }
 .gallery-car-img { width: 100%; height: 80px; object-fit: contain; border: 2px solid #444; border-radius: 8px; cursor: pointer; }
 
-/* ЕФЕКТИ */
 .car-win-badge { position: absolute; top: -8px; right: -8px; background: var(--gold); color: black; padding: 3px 8px; border-radius: 10px; font-size: 12px; font-weight: bold; z-index: 10; }
-.gallery-item.top-car .gallery-car-img { border-color: var(--gold) !important; box-shadow: 0 0 10px var(--gold); }
+
+/* Ефект ТОП-машини (Золото) */
+.gallery-item.top-car .gallery-car-img { border-color: var(--gold) !important; box-shadow: 0 0 15px var(--gold); }
+
+/* Ефект Абсолютного чемпіона (Моргання) */
 .gallery-item.absolute-champion .gallery-car-img { border-color: var(--absolute-cyan) !important; animation: blink-cyan 0.8s infinite alternate; }
-@keyframes blink-cyan { from { box-shadow: 0 0 2px var(--absolute-cyan); } to { box-shadow: 0 0 15px var(--absolute-cyan); } }
+@keyframes blink-cyan {
+    from { box-shadow: 0 0 2px var(--absolute-cyan); }
+    to { box-shadow: 0 0 20px var(--absolute-cyan); }
+}
 .absolute-label { position: absolute; bottom: -15px; width: 100%; font-size: 8px; color: var(--absolute-cyan); text-align: center; font-weight: bold; }
 
 /* ПІЛОТИ */
@@ -40,23 +58,13 @@ header { text-align: center; border-bottom: 5px solid var(--carrera-red); paddin
 .car-mini { width: 65px; height: 45px; object-fit: contain; background: #111; border: 1px solid #444; border-radius: 4px; cursor: pointer; }
 
 /* ВІДЕО */
-.video-section { margin-top: 25px; border-top: 1px solid #333; padding-top: 15px; }
-.video-grid { display: flex; gap: 15px; flex-wrap: wrap; }
+.video-grid { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px; }
 .video-item { width: 320px; background: #000; border-radius: 10px; overflow: hidden; border: 2px solid #333; }
 
 /* МОДАЛКА */
 .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; }
 .modal-content-wrapper { background: #1a1a1a; padding: 25px; border-radius: 15px; display: flex; flex-direction: column; align-items: center; width: 500px; max-width: 90%; }
-.modal-photo-container { width: 100%; height: 300px; display: flex; align-items: center; justify-content: center; }
-#bigCarImg { max-width: 100%; max-height: 100%; object-fit: contain; }
+#bigCarImg { max-width: 100%; max-height: 300px; object-fit: contain; }
 
-/* АДАПТИВНІСТЬ */
+/* Адаптивність (про всяк випадок) */
 @media (max-width: 1100px) { .main-layout { flex-direction: column; } .global-standings { position: static; width: auto; } }
-@media (max-width: 768px) {
-    .stage-info-row { flex-direction: column; }
-    .track-block { width: 100%; flex: none; }
-    .pilot-card { width: calc(50% - 15px); min-width: 140px; padding: 10px; }
-    .pilot-photo { width: 70px; height: 70px; }
-    .points { font-size: 1.4rem; }
-    .video-item { width: 100%; }
-}
