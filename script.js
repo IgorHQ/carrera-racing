@@ -1,69 +1,28 @@
 let db = null;
 let selectedStageId = null;
 
-// 1. Ініціалізація: Перевіряємо ТІЛЬКИ localStorage
+// ІНІЦІАЛІЗАЦІЯ
 async function initDB() {
     const localData = localStorage.getItem('carreraDB');
     if (localData) {
-        try {
-            db = JSON.parse(localData);
-            startApp();
-        } catch (e) {
-            console.error("Помилка парсингу бази, очищуємо...");
-            localStorage.removeItem('carreraDB');
-            showInitChoice();
-        }
+        db = JSON.parse(localData);
+        startApp();
     } else {
-        // Якщо в браузері пусто — показуємо вибір (Новий або GitHub)
         showInitChoice();
     }
 }
 
-// Початковий екран вибору
 function showInitChoice() {
     const board = document.getElementById('leaderboard');
     if (!board) return;
     board.innerHTML = `
         <div style="text-align:center; padding:50px; background:rgba(255,255,255,0.05); border-radius:20px; border:2px dashed #444; margin: 20px;">
-            <h2 style="color:white;">База даних не знайдена</h2>
-            <p style="color:#ccc;">Як ви хочете почати?</p>
+            <h2>База даних не знайдена</h2>
             <div style="display:flex; gap:20px; justify-content:center; margin-top:20px; flex-wrap:wrap;">
-                <button onclick="setupNewDB()" style="padding:15px 25px; background:var(--carrera-red); color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold;">Почати новий сезон (Локально)</button>
+                <button onclick="setupNewDB()" style="padding:15px 25px; background:var(--carrera-red); color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold;">Почати новий сезон</button>
                 <button onclick="loadFromGitHub()" style="padding:15px 25px; background:#444; color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold;">Завантажити з GitHub</button>
             </div>
         </div>`;
-}
-
-// Створення нової бази
-function setupNewDB() {
-    db = { stages: [], pilots_directory: [] };
-    saveData();
-    location.reload();
-}
-
-// Завантаження з GitHub (Тільки після натискання кнопки!)
-async function loadFromGitHub() {
-    // const userRepo = "ВАШ_ЛОГІН/РЕПОЗИТОРІЙ"; // Замініть на свій
-    // const url = `https://raw.githubusercontent.com/${userRepo}/carrera-racing/refs/heads/main/data.json`;
-    
-    const url = `https://raw.githubusercontent.com/IgorHQ/carrera-racing/refs/heads/main/data.json`;
-    
-
-    
-    
-    try {
-        const response = await fetch(url);
-        if (response.ok) {
-            db = await response.json();
-            saveData();
-            alert("Дані з GitHub успішно завантажені!");
-            location.reload();
-        } else {
-            alert("Не вдалося знайти файл на GitHub. Перевірте посилання в коді.");
-        }
-    } catch (e) {
-        alert("Помилка мережі при спробі завантажити з GitHub.");
-    }
 }
 
 function startApp() {
@@ -74,25 +33,49 @@ function startApp() {
 const saveData = () => localStorage.setItem('carreraDB', JSON.stringify(db));
 const getStageById = (id) => db.stages.find(s => s.id == id);
 
-// --- АДМІН ПАНЕЛЬ ---
+function setupNewDB() {
+    db = { 
+        stages: [], 
+        pilots_directory: [
+            { name: "Danylo", photo: "driver1.jpg" },
+            { name: "Igor", photo: "driver2.jpg" },
+            { name: "Volodymyr", photo: "driver3.jpg" },
+            { name: "Vasyl", photo: "driver4.jpg" }
+        ] 
+    };
+    saveData();
+    location.reload();
+}
 
+async function loadFromGitHub() {
+    const url = 'https://raw.githubusercontent.com/ВАШ_ЛОГІН/РЕПО/main/data.json';
+    try {
+        const response = await fetch(url);
+        if (response.ok) {
+            db = await response.json();
+            saveData();
+            location.reload();
+        } else { alert("Помилка завантаження!"); }
+    } catch (e) { alert("Помилка мережі!"); }
+}
+
+// --- АДМІНКА ---
 function checkAuth() {
     const u = document.getElementById('user').value;
     const p = document.getElementById('pass').value;
     if (u === 'admin' && p === 'admin') {
         document.getElementById('login-block').style.display = 'none';
         document.getElementById('admin-content').style.display = 'block';
-        if (db.stages && db.stages.length > 0) {
+        if (db.stages.length > 0) {
             selectedStageId = db.stages[db.stages.length - 1].id;
             updateAdminUI();
         }
-    } else { alert('Невірний логін або пароль!'); }
+    } else { alert('Невірний пароль!'); }
 }
 
 function updateAdminUI() {
     const selector = document.getElementById('stageSelector');
     if (!selector) return;
-    
     selector.innerHTML = db.stages.map(s => `<option value="${s.id}" ${s.id == selectedStageId ? 'selected' : ''}>${s.trackName}</option>`).join('');
     
     const stage = getStageById(selectedStageId);
@@ -102,102 +85,84 @@ function updateAdminUI() {
         document.getElementById('pilots-list-for-results').innerHTML = stage.pilots.map((p, i) => `
             <div style="display:flex; gap:10px; margin-bottom:8px; background:#f8f9fa; padding:10px; border-radius:6px; align-items:center;">
                 <span style="width:120px; color:#333; font-weight:bold;">${p.name}</span>
-                <input type="number" id="place-${i}" placeholder="Місце" style="width:60px; padding:5px;">
-                <input type="text" id="car-${i}" placeholder="bmw.jpg" style="flex:1; padding:5px;">
+                <input type="number" id="place-${i}" placeholder="Місце" style="width:60px">
+                <input type="text" id="car-${i}" placeholder="car.jpg" style="flex:1">
             </div>`).join('');
-            
-        const vList = document.getElementById('admin-video-list');
-        if (vList) {
-            vList.innerHTML = (stage.videos || []).map((v, idx) => `
-                <div style="font-size:12px; margin-top:5px;">🎬 ${v} <button onclick="removeVideo(${idx})" style="color:red; background:none; border:none; cursor:pointer;">[x]</button></div>
-            `).join('');
-        }
     }
 }
 
-// ПОВНЕ ВИДАЛЕННЯ (RESET)
-// function clearAllData() {
-//     if (confirm("ВИ ВПЕВНЕНІ? Це видалить ВСІ дані з браузера і поверне меню вибору!")) {
-//         localStorage.removeItem('carreraDB'); // ВИДАЛЯЄМО КЛЮЧ ПОВНІСТЮ
-//         db = null;
-//         alert("Пам'ять очищена.");
-//         location.reload(); // Після перезавантаження спрацює showInitChoice()
-//     }
-// }
-
-function clearAllData() {
-    if (confirm("УВАГА! Ви впевнені, що хочете ПОВНІСТЮ СТЕРТИ всі дані?")) {
-        // Очищуємо сховище повністю
-        localStorage.removeItem('carreraDB');
-        
-        // Обнуляємо змінну в пам'яті
-        db = null;
-        
-        // Перезавантажуємо сторінку
-        location.reload();
-    }
-}
-
-function deleteCurrentStage() {
-    if (!selectedStageId) return;
-    if (confirm("Видалити цей етап?")) {
-        db.stages = db.stages.filter(s => s.id != selectedStageId);
-        saveData();
-        location.reload();
-    }
+function createNewStage() {
+    const name = document.getElementById('newTrackName').value.trim();
+    const img = document.getElementById('newTrackImg').value.trim() || 'track1.png';
+    if (!name) return alert("Введіть назву траси!");
+    
+    const newStage = {
+        id: Date.now(),
+        trackName: name,
+        trackImg: img,
+        racesCount: 0,
+        videos: [],
+        pilots: db.pilots_directory.map(p => ({
+            ...p, totalPoints: 0, carPhotos: [], pointsHistory: []
+        }))
+    };
+    db.stages.push(newStage);
+    saveData();
+    location.reload();
 }
 
 function saveRace() {
     const stage = getStageById(selectedStageId);
-    if (!stage) return;
     stage.pilots.forEach((p, i) => {
         const place = parseInt(document.getElementById(`place-${i}`).value);
         const car = document.getElementById(`car-${i}`).value.trim() || 'car.jpg';
         if (!isNaN(place)) {
             const pts = (place === 1) ? 50 : Math.max(0, 50 - (place - 1) * 5);
-            p.totalPoints += pts;
-            p.pointsHistory.push(pts);
-            p.carPhotos.push(car);
+            p.totalPoints += pts; p.pointsHistory.push(pts); p.carPhotos.push(car);
         }
     });
-    stage.racesCount++;
-    saveData();
-    alert("Збережено!");
-    updateAdminUI();
+    stage.racesCount++; saveData(); updateAdminUI(); alert("Збережено!");
+}
+
+function deleteCurrentStage() {
+    if (confirm("Видалити цей етап?")) {
+        db.stages = db.stages.filter(s => s.id != selectedStageId);
+        saveData(); location.reload();
+    }
+}
+
+function clearAllData() {
+    if (confirm("СТЕРТИ ВСЕ? Дані буде видалено з браузера.")) {
+        localStorage.removeItem('carreraDB');
+        db = null;
+        location.reload();
+    }
 }
 
 function addVideoToStage() {
     const stage = getStageById(selectedStageId);
-    const val = document.getElementById('videoUrl').value.trim();
-    if (val) {
+    const v = document.getElementById('videoUrl').value.trim();
+    if (v) {
         if (!stage.videos) stage.videos = [];
-        stage.videos.push(val);
-        saveData();
-        document.getElementById('videoUrl').value = '';
-        updateAdminUI();
+        stage.videos.push(v);
+        saveData(); updateAdminUI(); document.getElementById('videoUrl').value = '';
     }
 }
 
-function removeVideo(idx) {
-    const stage = getStageById(selectedStageId);
-    stage.videos.splice(idx, 1);
-    saveData();
-    updateAdminUI();
+function exportDatabase() {
+    const blob = new Blob([JSON.stringify(db, null, 2)], { type: "application/json" });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'data.json';
+    link.click();
 }
 
-// --- РЕНДЕРИНГ ГОЛОВНОЇ ---
+// РЕНДЕРИНГ (index.html)
 function renderMainPage() {
     const board = document.getElementById('leaderboard');
     if (!board) return;
     board.innerHTML = '';
-    
-    // Якщо немає етапів, показуємо заглушку
-    if (!db.stages || db.stages.length === 0) {
-        board.innerHTML = `<h2 style="text-align:center; color:gray; margin-top:50px;">Етапів ще не створено. Зайдіть в адмінку.</h2>`;
-        return;
-    }
 
-    // Розрахунок загального заліку
     const totals = {};
     db.stages.forEach(s => s.pilots.forEach(p => totals[p.name] = (totals[p.name] || 0) + p.totalPoints));
     const sorted = Object.entries(totals).map(([name, points]) => ({ name, points })).sort((a,b) => b.points - a.points);
@@ -209,18 +174,13 @@ function renderMainPage() {
         `).join('');
     }
 
-    // Рендер етапів (від нових до старих)
     [...db.stages].reverse().forEach(stage => {
         const stageDiv = document.createElement('div');
         stageDiv.className = 'stage-container';
         
-        // Логіка перемог машин
         const carWins = {};
         stage.pilots.forEach(p => p.carPhotos.forEach((img, idx) => {
-            if(img) {
-                if(!carWins[img]) carWins[img] = 0;
-                if(p.pointsHistory[idx] === 50) carWins[img]++;
-            }
+            if (p.pointsHistory[idx] === 50) carWins[img] = (carWins[img] || 0) + 1;
         }));
         const maxWins = Math.max(...Object.values(carWins), 0);
 
@@ -230,12 +190,12 @@ function renderMainPage() {
                 <div class="track-block"><img src="img/${stage.trackImg}" class="stage-track-img"></div>
                 <div class="stage-car-gallery">
                     <div class="car-gallery-grid">
-                        ${Object.entries(carWins).map(([img, wins]) => {
-                            const isAbs = wins > 0 && wins === stage.racesCount;
+                        ${Object.keys(carWins).map(img => {
+                            const isAbs = carWins[img] === stage.racesCount && stage.racesCount > 0;
                             return `
-                            <div class="gallery-item ${isAbs ? 'absolute-champion' : (wins === maxWins && wins > 0 ? 'top-car' : '')}">
-                                ${wins > 0 ? `<div class="car-win-badge">🏆 ${wins}</div>` : ''}
-                                <img src="img/${img}" class="gallery-car-img" onclick="openCarModal('${img}', 'Перемог: ${wins}', '${stage.trackName}')">
+                            <div class="gallery-item ${isAbs ? 'absolute-champion' : (carWins[img] === maxWins ? 'top-car' : '')}">
+                                <div class="car-win-badge">🏆 ${carWins[img]}</div>
+                                <img src="img/${img}" class="gallery-car-img" onclick="openCarModal('${img}', 'Перемог: ${carWins[img]}', '${stage.trackName}')">
                                 ${isAbs ? '<div class="absolute-label">ABS CHAMPION</div>' : ''}
                             </div>`;
                         }).join('')}
@@ -244,7 +204,10 @@ function renderMainPage() {
             </div>
             <div class="pilots-grid">${[...stage.pilots].sort((a,b)=>b.totalPoints - a.totalPoints).map((p, i) => {
                 const carGroups = {};
-                p.carPhotos.forEach((img, idx) => { if(img) { if(!carGroups[img]) carGroups[img] = []; carGroups[img].push(idx+1); }});
+                p.carPhotos.forEach((img, idx) => {
+                    if(!carGroups[img]) carGroups[img] = [];
+                    carGroups[img].push(idx+1);
+                });
                 return `
                 <div class="pilot-card">
                     <div class="rank">#${i+1}</div>
@@ -261,8 +224,8 @@ function renderMainPage() {
                 </div>`;
             }).join('')}</div>
             ${stage.videos && stage.videos.length > 0 ? `
-                <div class="video-grid" style="display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;">
-                    ${stage.videos.map(v => `<div style="width:300px;"><video controls style="width:100%; border-radius:10px;"><source src="video/${v}" type="video/mp4"></video></div>`).join('')}
+                <div class="video-grid">
+                    ${stage.videos.map(v => `<div class="video-item"><video controls style="width:100%;"><source src="video/${v}" type="video/mp4"></video></div>`).join('')}
                 </div>` : ''}
         `;
         board.appendChild(stageDiv);
@@ -276,6 +239,7 @@ function openCarModal(imgSrc, title, details) {
     document.getElementById("modal-caption").innerHTML = `<b>${imgSrc}</b><br>${title}<br>${details}`;
     modal.style.display = "flex";
 }
+
 function closeModal() { document.getElementById("carModal").style.display = "none"; }
 
 initDB();

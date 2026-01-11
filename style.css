@@ -19,52 +19,77 @@ header { text-align: center; border-bottom: 5px solid var(--carrera-red); paddin
 .standings-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #333; }
 .standings-item.leader { color: var(--gold); }
 
-#leaderboard { flex: 1; }
+#leaderboard { flex: 1; min-width: 0; } /* min-width запобігає розтягуванню контенту */
 
 .stage-container { 
-    background: rgba(255, 255, 255, 0.02); padding: 30px; border-radius: 20px; 
-    margin-bottom: 40px; border-left: 8px solid var(--carrera-red); 
+    background: rgba(255, 255, 255, 0.03); padding: 30px; border-radius: 20px; 
+    margin-bottom: 40px; border-left: 8px solid var(--carrera-red);
 }
 
-.stage-info-row { display: flex; gap: 30px; margin: 25px 0; align-items: flex-start; }
-.track-block { flex: 0 0 400px; }
-.stage-track-img { width: 100%; border: 2px solid #444; border-radius: 12px; }
+.stage-info-row { display: flex; gap: 30px; margin-bottom: 25px; }
+.track-block { flex: 0 0 450px; }
+.stage-track-img { width: 100%; border-radius: 15px; border: 2px solid #444; }
 
-.stage-car-gallery { flex: 1; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; border: 1px solid #333; }
+/* ГАЛЕРЕЯ МАШИН */
+.stage-car-gallery { flex: 1; }
 .car-gallery-grid { display: flex; flex-wrap: wrap; gap: 15px; }
+.gallery-item { width: 100px; position: relative; cursor: pointer; transition: transform 0.2s; }
+.gallery-item:hover { transform: scale(1.1); }
+.gallery-car-img { width: 100%; height: 70px; object-fit: contain; background: #111; border-radius: 8px; border: 1px solid #333; }
 
-/* КАРТКИ МАШИН ТА ЕФЕКТИ */
-.gallery-item { position: relative; width: 140px; }
-.gallery-car-img { width: 100%; height: 80px; object-fit: contain; border: 2px solid #444; border-radius: 8px; cursor: pointer; }
-
-.car-win-badge { position: absolute; top: -8px; right: -8px; background: var(--gold); color: black; padding: 3px 8px; border-radius: 10px; font-size: 12px; font-weight: bold; z-index: 10; }
-
-/* Ефект ТОП-машини (Золото) */
-.gallery-item.top-car .gallery-car-img { border-color: var(--gold) !important; box-shadow: 0 0 15px var(--gold); }
-
-/* Ефект Абсолютного чемпіона (Моргання) */
-.gallery-item.absolute-champion .gallery-car-img { border-color: var(--absolute-cyan) !important; animation: blink-cyan 0.8s infinite alternate; }
-@keyframes blink-cyan {
-    from { box-shadow: 0 0 2px var(--absolute-cyan); }
-    to { box-shadow: 0 0 20px var(--absolute-cyan); }
-}
+.car-win-badge { position: absolute; top: -10px; right: -10px; background: var(--gold); color: black; font-size: 10px; padding: 3px 6px; border-radius: 10px; font-weight: bold; z-index: 2; }
+.top-car { border: 2px solid var(--gold); border-radius: 10px; padding: 3px; }
+.absolute-champion { border: 2px solid var(--absolute-cyan); border-radius: 10px; padding: 3px; animation: glow 1.5s infinite alternate; }
+@keyframes glow { from { box-shadow: 0 0 5px var(--absolute-cyan); } to { box-shadow: 0 0 20px var(--absolute-cyan); } }
 .absolute-label { position: absolute; bottom: -15px; width: 100%; font-size: 8px; color: var(--absolute-cyan); text-align: center; font-weight: bold; }
 
-/* ПІЛОТИ */
+/* ПІЛОТИ - Виправлено для респонсиву */
 .pilots-grid { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 30px; }
-.pilot-card { background: #000; border: 1px solid #333; padding: 20px; text-align: center; border-radius: 15px; width: 220px; position: relative; }
+.pilot-card { 
+    background: #000; border: 1px solid #333; padding: 20px; text-align: center; 
+    border-radius: 15px; width: 220px; position: relative; box-sizing: border-box; 
+}
 .pilot-photo { width: 100px; height: 100px; border-radius: 50%; border: 4px solid #fff; object-fit: cover; }
 .points { color: var(--carrera-red); font-size: 1.8rem; margin: 10px 0; }
+
+.cars { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 10px; }
+.car-wrapper { position: relative; }
 .car-mini { width: 65px; height: 45px; object-fit: contain; background: #111; border: 1px solid #444; border-radius: 4px; cursor: pointer; }
+.car-count-badge { position: absolute; top: -5px; right: -5px; background: #555; color: white; font-size: 9px; padding: 2px 5px; border-radius: 50%; }
 
 /* ВІДЕО */
 .video-grid { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px; }
 .video-item { width: 320px; background: #000; border-radius: 10px; overflow: hidden; border: 2px solid #333; }
 
 /* МОДАЛКА */
-.modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; }
-.modal-content-wrapper { background: #1a1a1a; padding: 25px; border-radius: 15px; display: flex; flex-direction: column; align-items: center; width: 500px; max-width: 90%; }
-#bigCarImg { max-width: 100%; max-height: 300px; object-fit: contain; }
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; }
+.modal-content-wrapper { background: #222; padding: 20px; border-radius: 15px; display: flex; flex-direction: column; align-items: center; width: 500px; max-width: 95%; }
+.modal-photo-container { width: 100%; height: 300px; display: flex; align-items: center; justify-content: center; }
+#bigCarImg { max-width: 100%; max-height: 100%; object-fit: contain; }
+#modal-caption { text-align: center; margin-top: 15px; line-height: 1.5; color: #ccc; }
+.close-modal { position: absolute; top: 20px; right: 30px; font-size: 40px; color: white; cursor: pointer; }
 
-/* Адаптивність (про всяк випадок) */
-@media (max-width: 1100px) { .main-layout { flex-direction: column; } .global-standings { position: static; width: auto; } }
+/* --- АДАПТИВНІСТЬ --- */
+@media (max-width: 1100px) {
+    .main-layout { flex-direction: column; }
+    .global-standings { position: static; width: auto; margin-bottom: 20px; }
+    .track-block { flex: 0 0 auto; width: 100%; }
+}
+
+@media (max-width: 768px) {
+    header h1 { font-size: 1.4rem; padding: 0 10px; }
+    .stage-container { padding: 15px; }
+    .stage-info-row { flex-direction: column; }
+    
+    /* Картки по 2 в ряд */
+    .pilot-card { width: calc(50% - 10px); padding: 15px 10px; }
+    .pilot-photo { width: 70px; height: 70px; }
+    .points { font-size: 1.4rem; }
+    
+    /* Відео на всю ширину */
+    .video-item { width: 100%; }
+}
+
+@media (max-width: 480px) {
+    .pilot-card { width: 100%; } /* По 1 в ряд на зовсім малих екранах */
+}
