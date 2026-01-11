@@ -3,8 +3,7 @@ let selectedStageId = null;
 
 // Функція завантаження (Замініть посилання на своє!)
 async function loadFromGitHub() {
-    const url = 'https://raw.githubusercontent.com/Danil-72/carrera-go-stats/main/data.json';
-    try {
+    const url = ʼhttps://raw.githubusercontent.com/IgorHQ/carrera-racing/refs/heads/main/data.jsonʼ
         const response = await fetch(url);
         if (response.ok) {
             db = await response.json();
