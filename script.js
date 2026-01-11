@@ -48,7 +48,7 @@ function setupNewDB() {
 }
 
 async function loadFromGitHub() {
-    const url = 'https://raw.githubusercontent.com/ВАШ_ЛОГІН/РЕПО/main/data.json';
+    const url = 'https://raw.githubusercontent.com/IgorHQ/carrera-racing/refs/heads/main/data.json';
     try {
         const response = await fetch(url);
         if (response.ok) {
