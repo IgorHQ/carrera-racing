@@ -2,19 +2,19 @@
   "stages": [
     {
       "id": 1768042281552,
-      "trackName": "Liolya",
-      "trackImg": "track3.png",
+      "trackName": "Grand Prix Lviv (test)",
+      "trackImg": "track4.png",
       "pilots": [
         {
           "name": "Danylo",
-          "photo": "driver1.jpg",
+          "photo": "Danylo.jpg",
           "totalPoints": 245,
           "carPhotos": [
-            "car4.jpg",
-            "car2.jpg",
-            "car2.jpg",
+            "Mercedes-AMG_C-Coupé_DTM.jpeg",
+            "Ferrari_458_GT2.jpeg",
+            "Ferrari_458_GT2.jpeg",
             "AUDI_RS5_DTM.jpeg",
-            "car4.jpg"
+            "BMW_DTM.jpg"
           ],
           "pointsHistory": [
             50,
@@ -26,14 +26,14 @@
         },
         {
           "name": "Igor",
-          "photo": "driver2.jpg",
+          "photo": "Igor.jpg",
           "totalPoints": 185,
           "carPhotos": [
-            "car2.jpg",
-            "car1.jpg",
-            "car4.jpg",
-            "car4.jpg",
-            "car2.jpg"
+            "BMW_DTM.jpg",
+            "Chevrolet_Camaro.jpeg",
+            "Mercedes-AMG_GT3.jpeg",
+            "Mercedes-AMG_GT3.jpeg",
+            "Mercedes-AMG_C-Coupé_DTM.jpeg"
           ],
           "pointsHistory": [
             35,
@@ -45,13 +45,13 @@
         },
         {
           "name": "Vasyl",
-          "photo": "driver4.jpg",
+          "photo": "Vasyl.jpg",
           "totalPoints": 220,
           "carPhotos": [
-            "car3.jpg",
-            "car4.jpg",
-            "car2.jpg",
-            "car2.jpg",
+            "Lamborghini_Huracán_Polizia.jpeg",
+            "Finn_McMissile.jpeg",
+            "Finn_McMissile.jpeg",
+            "Jackson_Storm.jpeg",
             "Ferrari_458_GT2.jpeg"
           ],
           "pointsHistory": [
@@ -64,13 +64,13 @@
         },
         {
           "name": "Volodymyr",
-          "photo": "driver3.jpg",
+          "photo": "Volodymyr.jpg",
           "totalPoints": 205,
           "carPhotos": [
-            "car1.jpg",
-            "car3.jpg",
-            "car3.jpg",
-            "car1.jpg",
+            "Lamborghini_Huracán.jpeg",
+            "Sally_Carrera.jpeg",
+            "Sally_Carrera.jpeg",
+            "Jackson_Storm.jpeg",
             "AUDI_RS5_DTM.jpeg"
           ],
           "pointsHistory": [
@@ -92,19 +92,19 @@
   "pilots_directory": [
     {
       "name": "Danylo",
-      "photo": "driver1.jpg"
+      "photo": "Danylo.jpg"
     },
     {
       "name": "Igor",
-      "photo": "driver2.jpg"
+      "photo": "Igor.jpg"
     },
     {
       "name": "Volodymyr",
-      "photo": "driver3.jpg"
+      "photo": "Volodymyr.jpg"
     },
     {
       "name": "Vasyl",
-      "photo": "driver4.jpg"
+      "photo": "Vasyl.jpg"
     }
   ]
 }
