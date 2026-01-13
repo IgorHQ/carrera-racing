@@ -47,16 +47,41 @@ function setupNewDB() {
     location.reload();
 }
 
+// async function loadFromGitHub() {
+//     const url = 'https://raw.githubusercontent.com/IgorHQ/carrera-racing/refs/heads/main/data.json';
+//     try {
+//         const response = await fetch(url);
+//         if (response.ok) {
+//             db = await response.json();
+//             saveData();
+//             location.reload();
+//         } else { alert("Помилка завантаження!"); }
+//     } catch (e) { alert("Помилка мережі!"); }
+// }
+
 async function loadFromGitHub() {
     const url = 'https://raw.githubusercontent.com/IgorHQ/carrera-racing/refs/heads/main/data.json';
     try {
         const response = await fetch(url);
         if (response.ok) {
-            db = await response.json();
-            saveData();
-            location.reload();
-        } else { alert("Помилка завантаження!"); }
-    } catch (e) { alert("Помилка мережі!"); }
+            const githubData = await response.json();
+            
+            // Перевірка, чи отримані дані мають правильну структуру
+            if (githubData && githubData.stages) {
+                db = githubData;
+                saveData(); // Збереження в localStorage
+                alert("Дані успішно завантажені з хмари!");
+                location.reload();
+            } else {
+                alert("Формат файлу на GitHub невірний!");
+            }
+        } else { 
+            alert("Помилка завантаження: " + response.status); 
+        }
+    } catch (e) { 
+        console.error(e);
+        alert("Помилка мережі або доступу до GitHub!"); 
+    }
 }
 
 // --- АДМІНКА ---
@@ -158,86 +183,199 @@ function exportDatabase() {
 }
 
 // РЕНДЕРИНГ (index.html)
+// function renderMainPage() {
+//     const board = document.getElementById('leaderboard');
+//     if (!board) return;
+//     board.innerHTML = '';
+
+//     const totals = {};
+//     db.stages.forEach(s => s.pilots.forEach(p => totals[p.name] = (totals[p.name] || 0) + p.totalPoints));
+//     const sorted = Object.entries(totals).map(([name, points]) => ({ name, points })).sort((a,b) => b.points - a.points);
+    
+//     const ob = document.getElementById('overall-leaderboard');
+//     if (ob) {
+//         ob.innerHTML = sorted.map((p, i) => `
+//             <div class="standings-item ${i === 0 ? 'leader' : ''}"><span>${i+1}. ${p.name}</span><strong>${p.points}</strong></div>
+//         `).join('');
+//     }
+
+//     [...db.stages].reverse().forEach(stage => {
+//         const stageDiv = document.createElement('div');
+//         stageDiv.className = 'stage-container';
+        
+//         const carWins = {};
+//         stage.pilots.forEach(p => p.carPhotos.forEach((img, idx) => {
+//             if (p.pointsHistory[idx] === 50) carWins[img] = (carWins[img] || 0) + 1;
+//         }));
+//         const maxWins = Math.max(...Object.values(carWins), 0);
+
+//         stageDiv.innerHTML = `
+//             <h2>${stage.trackName}</h2>
+//             <div class="stage-info-row">
+//                 <div class="track-block"><img src="img/${stage.trackImg}" class="stage-track-img"></div>
+//                 <div class="stage-car-gallery">
+//                     <div class="car-gallery-grid">
+//                         ${Object.keys(carWins).map(img => {
+//                             const isAbs = carWins[img] === stage.racesCount && stage.racesCount > 0;
+//                             return `
+//                             <div class="gallery-item ${isAbs ? 'absolute-champion' : (carWins[img] === maxWins ? 'top-car' : '')}">
+//                                 <div class="car-win-badge">🏆 ${carWins[img]}</div>
+//                                 <img src="img/${img}" class="gallery-car-img" onclick="openCarModal('${img}', 'Перемог: ${carWins[img]}', '${stage.trackName}')">
+//                                 ${isAbs ? '<div class="absolute-label">ABS CHAMPION</div>' : ''}
+//                             </div>`;
+//                         }).join('')}
+//                     </div>
+//                 </div>
+//             </div>
+//             <div class="pilots-grid">${[...stage.pilots].sort((a,b)=>b.totalPoints - a.totalPoints).map((p, i) => {
+//                 const carGroups = {};
+//                 p.carPhotos.forEach((img, idx) => {
+//                     if(!carGroups[img]) carGroups[img] = [];
+//                     carGroups[img].push(idx+1);
+//                 });
+//                 return `
+//                 <div class="pilot-card">
+//                     <div class="rank">#${i+1}</div>
+//                     <img src="img/${p.photo}" class="pilot-photo">
+//                     <h3>${p.name}</h3>
+//                     <p class="points">${p.totalPoints} pts</p>
+//                     <div class="cars">
+//                         ${Object.entries(carGroups).map(([img, races]) => `
+//                             <div class="car-wrapper">
+//                                 ${races.length > 1 ? `<div class="car-count-badge">${races.length}</div>` : ''}
+//                                 <img src="img/${img}" class="car-mini" onclick="openCarModal('${img}', 'Пілот: ${p.name}', 'Заїзди: ${races.join(',')}')">
+//                             </div>`).join('')}
+//                     </div>
+//                 </div>`;
+//             }).join('')}</div>
+//             ${stage.videos && stage.videos.length > 0 ? `
+//                 <div class="video-grid">
+//                     ${stage.videos.map(v => `<div class="video-item"><video controls style="width:100%;"><source src="video/${v}" type="video/mp4"></video></div>`).join('')}
+//                 </div>` : ''}
+//         `;
+//         board.appendChild(stageDiv);
+//     });
+// }
+
+// function openCarModal(imgSrc, title, details) {
+//     const modal = document.getElementById("carModal");
+//     if (!modal) return;
+//     document.getElementById("bigCarImg").src = imgSrc.startsWith('img/') ? imgSrc : `img/${imgSrc}`;
+//     document.getElementById("modal-caption").innerHTML = `<b>${imgSrc}</b><br>${title}<br>${details}`;
+//     modal.style.display = "flex";
+// }
+
 function renderMainPage() {
     const board = document.getElementById('leaderboard');
     if (!board) return;
     board.innerHTML = '';
 
+    // 1. Рахуємо загальний залік по всіх етапах
     const totals = {};
-    db.stages.forEach(s => s.pilots.forEach(p => totals[p.name] = (totals[p.name] || 0) + p.totalPoints));
-    const sorted = Object.entries(totals).map(([name, points]) => ({ name, points })).sort((a,b) => b.points - a.points);
+    db.stages.forEach(s => {
+        s.pilots.forEach(p => {
+            totals[p.name] = (totals[p.name] || 0) + p.totalPoints;
+        });
+    });
+
+    const sorted = Object.entries(totals)
+        .map(([name, points]) => ({ name, points }))
+        .sort((a, b) => b.points - a.points);
     
     const ob = document.getElementById('overall-leaderboard');
     if (ob) {
         ob.innerHTML = sorted.map((p, i) => `
-            <div class="standings-item ${i === 0 ? 'leader' : ''}"><span>${i+1}. ${p.name}</span><strong>${p.points}</strong></div>
+            <div class="standings-item ${i === 0 ? 'leader' : ''}">
+                <span>${i + 1}. ${p.name}</span>
+                <strong>${p.points}</strong>
+            </div>
         `).join('');
     }
 
+    // 2. Рендеримо кожен етап (від нових до старих)
     [...db.stages].reverse().forEach(stage => {
         const stageDiv = document.createElement('div');
         stageDiv.className = 'stage-container';
         
-        const carWins = {};
-        stage.pilots.forEach(p => p.carPhotos.forEach((img, idx) => {
-            if (p.pointsHistory[idx] === 50) carWins[img] = (carWins[img] || 0) + 1;
-        }));
-        const maxWins = Math.max(...Object.values(carWins), 0);
+        // Збираємо статистику по ВСІХ авто на цьому етапі
+        const carStats = {};
+        stage.pilots.forEach(p => {
+            p.carPhotos.forEach((img, idx) => {
+                if (!carStats[img]) {
+                    carStats[img] = { wins: 0, totalRaces: 0 };
+                }
+                carStats[img].totalRaces++;
+                if (p.pointsHistory[idx] === 50) {
+                    carStats[img].wins++;
+                }
+            });
+        });
+
+        const maxWins = Math.max(...Object.values(carStats).map(s => s.wins), 0);
 
         stageDiv.innerHTML = `
             <h2>${stage.trackName}</h2>
             <div class="stage-info-row">
-                <div class="track-block"><img src="img/${stage.trackImg}" class="stage-track-img"></div>
+                <div class="track-block">
+                    <img src="img/${stage.trackImg}" class="stage-track-img">
+                </div>
                 <div class="stage-car-gallery">
                     <div class="car-gallery-grid">
-                        ${Object.keys(carWins).map(img => {
-                            const isAbs = carWins[img] === stage.racesCount && stage.racesCount > 0;
+                        ${Object.keys(carStats).map(img => {
+                            const stats = carStats[img];
+                            const isAbs = stats.wins === stage.racesCount && stage.racesCount > 0;
+                            const isTop = stats.wins === maxWins && maxWins > 0;
+                            
                             return `
-                            <div class="gallery-item ${isAbs ? 'absolute-champion' : (carWins[img] === maxWins ? 'top-car' : '')}">
-                                <div class="car-win-badge">🏆 ${carWins[img]}</div>
-                                <img src="img/${img}" class="gallery-car-img" onclick="openCarModal('${img}', 'Перемог: ${carWins[img]}', '${stage.trackName}')">
+                            <div class="gallery-item ${isAbs ? 'absolute-champion' : (isTop ? 'top-car' : '')}">
+                                ${stats.wins > 0 ? `<div class="car-win-badge">🏆 ${stats.wins}</div>` : ''}
+                                <img src="img/${img}" class="gallery-car-img" 
+                                     onclick="openCarModal('${img}', 'Перемог: ${stats.wins}', 'Заїздів на етапі: ${stats.totalRaces}')">
                                 ${isAbs ? '<div class="absolute-label">ABS CHAMPION</div>' : ''}
                             </div>`;
                         }).join('')}
                     </div>
                 </div>
             </div>
-            <div class="pilots-grid">${[...stage.pilots].sort((a,b)=>b.totalPoints - a.totalPoints).map((p, i) => {
-                const carGroups = {};
-                p.carPhotos.forEach((img, idx) => {
-                    if(!carGroups[img]) carGroups[img] = [];
-                    carGroups[img].push(idx+1);
-                });
-                return `
-                <div class="pilot-card">
-                    <div class="rank">#${i+1}</div>
-                    <img src="img/${p.photo}" class="pilot-photo">
-                    <h3>${p.name}</h3>
-                    <p class="points">${p.totalPoints} pts</p>
-                    <div class="cars">
-                        ${Object.entries(carGroups).map(([img, races]) => `
-                            <div class="car-wrapper">
-                                ${races.length > 1 ? `<div class="car-count-badge">${races.length}</div>` : ''}
-                                <img src="img/${img}" class="car-mini" onclick="openCarModal('${img}', 'Пілот: ${p.name}', 'Заїзди: ${races.join(',')}')">
-                            </div>`).join('')}
-                    </div>
-                </div>`;
-            }).join('')}</div>
+
+            <div class="pilots-grid">
+                ${[...stage.pilots].sort((a, b) => b.totalPoints - a.totalPoints).map((p, i) => {
+                    const carGroups = {};
+                    p.carPhotos.forEach((img, idx) => {
+                        if (!carGroups[img]) carGroups[img] = [];
+                        carGroups[img].push(idx + 1);
+                    });
+
+                    return `
+                    <div class="pilot-card">
+                        <div class="rank">#${i + 1}</div>
+                        <img src="img/${p.photo}" class="pilot-photo">
+                        <h3>${p.name}</h3>
+                        <p class="points">${p.totalPoints} pts</p>
+                        <div class="cars">
+                            ${Object.entries(carGroups).map(([img, races]) => `
+                                <div class="car-wrapper">
+                                    ${races.length > 1 ? `<div class="car-count-badge">${races.length}</div>` : ''}
+                                    <img src="img/${img}" class="car-mini" 
+                                         onclick="openCarModal('${img}', 'Пілот: ${p.name}', 'Заїзди: ${races.join(',')}')">
+                                </div>`).join('')}
+                        </div>
+                    </div>`;
+                }).join('')}
+            </div>
+
             ${stage.videos && stage.videos.length > 0 ? `
                 <div class="video-grid">
-                    ${stage.videos.map(v => `<div class="video-item"><video controls style="width:100%;"><source src="video/${v}" type="video/mp4"></video></div>`).join('')}
+                    ${stage.videos.map(v => `
+                        <div class="video-item">
+                            <video controls style="width:100%;">
+                                <source src="video/${v}" type="video/mp4">
+                            </video>
+                        </div>`).join('')}
                 </div>` : ''}
         `;
         board.appendChild(stageDiv);
     });
-}
-
-function openCarModal(imgSrc, title, details) {
-    const modal = document.getElementById("carModal");
-    if (!modal) return;
-    document.getElementById("bigCarImg").src = imgSrc.startsWith('img/') ? imgSrc : `img/${imgSrc}`;
-    document.getElementById("modal-caption").innerHTML = `<b>${imgSrc}</b><br>${title}<br>${details}`;
-    modal.style.display = "flex";
 }
 
 function closeModal() { document.getElementById("carModal").style.display = "none"; }
