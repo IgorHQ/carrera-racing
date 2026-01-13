@@ -270,7 +270,7 @@ function renderMainPage() {
     if (!board) return;
     board.innerHTML = '';
 
-    // 1. Рахуємо загальний залік по всіх етапах
+    // 1. Рахуємо загальний залік
     const totals = {};
     db.stages.forEach(s => {
         s.pilots.forEach(p => {
@@ -292,12 +292,12 @@ function renderMainPage() {
         `).join('');
     }
 
-    // 2. Рендеримо кожен етап (від нових до старих)
+    // 2. Рендеримо етапи
     [...db.stages].reverse().forEach(stage => {
         const stageDiv = document.createElement('div');
         stageDiv.className = 'stage-container';
         
-        // Збираємо статистику по ВСІХ авто на цьому етапі
+        // Збір ВСІХ авто етапу для галереї праворуч від траси
         const carStats = {};
         stage.pilots.forEach(p => {
             p.carPhotos.forEach((img, idx) => {
@@ -330,7 +330,7 @@ function renderMainPage() {
                             <div class="gallery-item ${isAbs ? 'absolute-champion' : (isTop ? 'top-car' : '')}">
                                 ${stats.wins > 0 ? `<div class="car-win-badge">🏆 ${stats.wins}</div>` : ''}
                                 <img src="img/${img}" class="gallery-car-img" 
-                                     onclick="openCarModal('${img}', 'Перемог: ${stats.wins}', 'Заїздів на етапі: ${stats.totalRaces}')">
+                                     onclick="openCarModal('${img}', 'Перемог: ${stats.wins}', 'Всього заїздів на етапі: ${stats.totalRaces}')">
                                 ${isAbs ? '<div class="absolute-label">ABS CHAMPION</div>' : ''}
                             </div>`;
                         }).join('')}
@@ -357,7 +357,7 @@ function renderMainPage() {
                                 <div class="car-wrapper">
                                     ${races.length > 1 ? `<div class="car-count-badge">${races.length}</div>` : ''}
                                     <img src="img/${img}" class="car-mini" 
-                                         onclick="openCarModal('${img}', 'Пілот: ${p.name}', 'Заїзди: ${races.join(',')}')">
+                                         onclick="openCarModal('${img}', 'Пілот: ${p.name}', 'Брав участь у заїздах: ${races.join(', ')}')">
                                 </div>`).join('')}
                         </div>
                     </div>`;
@@ -378,6 +378,27 @@ function renderMainPage() {
     });
 }
 
-function closeModal() { document.getElementById("carModal").style.display = "none"; }
+// ПОВЕРНУТА ТА ВИПРАВЛЕНА ФУНКЦІЯ МОДАЛКИ
+function openCarModal(imgSrc, title, details) {
+    const modal = document.getElementById("carModal");
+    if (!modal) return;
+    
+    // Встановлюємо фото
+    const bigImg = document.getElementById("bigCarImg");
+    bigImg.src = imgSrc.startsWith('img/') ? imgSrc : `img/${imgSrc}`;
+    
+    // Формуємо підпис: Назва файлу (як назва авто) + статистика
+    document.getElementById("modal-caption").innerHTML = `
+        <h3 style="margin: 0 0 10px 0; color: white;">${imgSrc}</h3>
+        <p style="margin: 5px 0;">${title}</p>
+        <p style="margin: 5px 0; font-size: 0.9em; color: #aaa;">${details}</p>
+    `;
+    
+    modal.style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById("carModal").style.display = "none";
+}
 
 initDB();
