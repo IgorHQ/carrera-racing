@@ -8,23 +8,23 @@
         {
           "name": "Danylo",
           "photo": "Danylo.jpg",
-          "totalPoints": 0,
+          "totalPoints": 50,
           "carPhotos": [
-      
+          "BMW_DTM.jpg"
           ],
           "pointsHistory": [
-            
+           50 
           ]
         },
         {
           "name": "Igor",
           "photo": "Igor.jpg",
-          "totalPoints": 0,
+          "totalPoints": 45,
           "carPhotos": [
-            
+          "Mercedes-AMG_C-Coupé_DTM.jpeg"
           ],
           "pointsHistory": [
-          
+          45
           ]
         }
       ],
