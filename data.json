@@ -54,5 +54,20 @@
       "name": "Vasyl",
       "photo": "Vasyl.jpg"
     }
-  ]
+  ],
+   "cars_directory": [
+    {"name": "AUDI RS5 DTM", "photo": "AUDI_RS5_DTM.jpeg"},
+    {"name": "BMW DTM", "photo": "BMW_DTM.jpg"},
+    {"name": "Ferrar 458 GT2", "photo": "Ferrari_458_GT2.jpeg"},
+    {"name": "Chevrolet Camaro", "photo": "Chevrolet_Camaro.jpeg"},
+    {"name": "Fin McMissile", "photo": "Finn_McMissile.jpeg"},
+    {"name": "Jackson Storm", "photo": "Jackson_Storm.jpeg"},
+    {"name": "Lamborghini Huracán Polizia", "photo": "Lamborghini_Huracán_Polizia.jpeg"},
+    {"name": "Lamborghini Huracán", "photo": "Lamborghini_Huracán.jpeg"},
+    {"name": "McQueen", "photo": "McQueen.jpeg"},
+    {"name": "Mercedes AMG C-Coupé_DTM", "photo": "Mercedes-AMG_C-Coupé_DTM.jpeg"},
+    {"name": "Mercedes-AMG GT3", "photo": "Mercedes-AMG_GT3.jpeg"},
+    {"name": "Sally Carrera", "photo": "Sally_Carrera.jpeg"},
+     
+]
 }
