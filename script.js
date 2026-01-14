@@ -98,6 +98,24 @@ function checkAuth() {
     } else { alert('Невірний пароль!'); }
 }
 
+// function updateAdminUI() {
+//     const selector = document.getElementById('stageSelector');
+//     if (!selector) return;
+//     selector.innerHTML = db.stages.map(s => `<option value="${s.id}" ${s.id == selectedStageId ? 'selected' : ''}>${s.trackName}</option>`).join('');
+    
+//     const stage = getStageById(selectedStageId);
+//     if (stage) {
+//         document.getElementById('active-stage-controls').style.display = 'block';
+//         document.getElementById('current-st-name').innerText = "Траса: " + stage.trackName;
+//         document.getElementById('pilots-list-for-results').innerHTML = stage.pilots.map((p, i) => `
+//             <div style="display:flex; gap:10px; margin-bottom:8px; background:#f8f9fa; padding:10px; border-radius:6px; align-items:center;">
+//                 <span style="width:120px; color:#333; font-weight:bold;">${p.name}</span>
+//                 <input type="number" id="place-${i}" placeholder="Місце" style="width:60px">
+//                 <input type="text" id="car-${i}" placeholder="car.jpg" style="flex:1">
+//             </div>`).join('');
+//     }
+// }
+
 function updateAdminUI() {
     const selector = document.getElementById('stageSelector');
     if (!selector) return;
@@ -107,11 +125,14 @@ function updateAdminUI() {
     if (stage) {
         document.getElementById('active-stage-controls').style.display = 'block';
         document.getElementById('current-st-name').innerText = "Траса: " + stage.trackName;
+        
+        // Додано чекбокс та обгортку для зручності
         document.getElementById('pilots-list-for-results').innerHTML = stage.pilots.map((p, i) => `
-            <div style="display:flex; gap:10px; margin-bottom:8px; background:#f8f9fa; padding:10px; border-radius:6px; align-items:center;">
-                <span style="width:120px; color:#333; font-weight:bold;">${p.name}</span>
-                <input type="number" id="place-${i}" placeholder="Місце" style="width:60px">
-                <input type="text" id="car-${i}" placeholder="car.jpg" style="flex:1">
+            <div class="admin-pilot-row" style="display:flex; gap:10px; margin-bottom:8px; background:#f8f9fa; padding:10px; border-radius:6px; align-items:center; border: 1px solid #ddd;">
+                <input type="checkbox" id="active-${i}" checked style="width:20px; height:20px; cursor:pointer;">
+                <span style="width:120px; color:#333; font-weight:bold; overflow:hidden; text-overflow:ellipsis;">${p.name}</span>
+                <input type="number" id="place-${i}" placeholder="Місце" style="width:60px; padding:5px;">
+                <input type="text" id="car-${i}" placeholder="car.jpg" style="flex:1; padding:5px;">
             </div>`).join('');
     }
 }
@@ -136,17 +157,58 @@ function createNewStage() {
     location.reload();
 }
 
+// function saveRace() {
+//     const stage = getStageById(selectedStageId);
+//     stage.pilots.forEach((p, i) => {
+//         const place = parseInt(document.getElementById(`place-${i}`).value);
+//         const car = document.getElementById(`car-${i}`).value.trim() || 'car.jpg';
+//         if (!isNaN(place)) {
+//             const pts = (place === 1) ? 50 : Math.max(0, 50 - (place - 1) * 5);
+//             p.totalPoints += pts; p.pointsHistory.push(pts); p.carPhotos.push(car);
+//         }
+//     });
+//     stage.racesCount++; saveData(); updateAdminUI(); alert("Збережено!");
+// }
+
 function saveRace() {
     const stage = getStageById(selectedStageId);
+    let participantsInThisRace = 0;
+
+    // Спершу перевіримо, чи хтось взагалі вибраний
     stage.pilots.forEach((p, i) => {
-        const place = parseInt(document.getElementById(`place-${i}`).value);
-        const car = document.getElementById(`car-${i}`).value.trim() || 'car.jpg';
-        if (!isNaN(place)) {
-            const pts = (place === 1) ? 50 : Math.max(0, 50 - (place - 1) * 5);
-            p.totalPoints += pts; p.pointsHistory.push(pts); p.carPhotos.push(car);
-        }
+        if (document.getElementById(`active-${i}`).checked) participantsInThisRace++;
     });
-    stage.racesCount++; saveData(); updateAdminUI(); alert("Збережено!");
+
+    if (participantsInThisRace === 0) {
+        return alert("Виберіть хоча б одного пілота!");
+    }
+
+    stage.pilots.forEach((p, i) => {
+        const isActive = document.getElementById(`active-${i}`).checked;
+        const placeInput = document.getElementById(`place-${i}`);
+        const carInput = document.getElementById(`car-${i}`);
+
+        if (isActive) {
+            const place = parseInt(placeInput.value);
+            const car = carInput.value.trim() || 'car.jpg';
+
+            if (!isNaN(place)) {
+                // Логіка нарахування очок: 1 місце - 50, далі -5 за кожне місце
+                const pts = (place === 1) ? 50 : Math.max(0, 50 - (place - 1) * 5);
+                
+                p.totalPoints += pts; 
+                p.pointsHistory.push(pts); 
+                p.carPhotos.push(car);
+            }
+        }
+        // Очищаємо поля для наступного заїзду, але не чіпаємо фото авто (зручно для серії заїздів)
+        placeInput.value = '';
+    });
+
+    stage.racesCount++; 
+    saveData(); 
+    updateAdminUI(); 
+    alert(`Заїзд №${stage.racesCount} збережено!`);
 }
 
 function deleteCurrentStage() {
@@ -320,6 +382,7 @@ function renderMainPage() {
                     <img src="img/${stage.trackImg}" class="stage-track-img">
                 </div>
                 <div class="stage-car-gallery">
+                <h4>Автомобілі етапу</h4>
                     <div class="car-gallery-grid">
                         ${Object.keys(carStats).map(img => {
                             const stats = carStats[img];
@@ -338,7 +401,9 @@ function renderMainPage() {
                 </div>
             </div>
 
+            <h3>Рейтинг пілотів етапу</h3>
             <div class="pilots-grid">
+            
                 ${[...stage.pilots].sort((a, b) => b.totalPoints - a.totalPoints).map((p, i) => {
                     const carGroups = {};
                     p.carPhotos.forEach((img, idx) => {
@@ -365,6 +430,7 @@ function renderMainPage() {
             </div>
 
             ${stage.videos && stage.videos.length > 0 ? `
+                <h3>Відео фрагменти перегонів</h3>
                 <div class="video-grid">
                     ${stage.videos.map(v => `
                         <div class="video-item">
