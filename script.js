@@ -59,27 +59,92 @@ function setupNewDB() {
 //     } catch (e) { alert("Помилка мережі!"); }
 // }
 
+// async function loadFromGitHub() {
+//     const url = 'https://raw.githubusercontent.com/IgorHQ/carrera-racing/refs/heads/main/data.json';
+//     try {
+//         const response = await fetch(url);
+//         if (response.ok) {
+//             const githubData = await response.json();
+            
+//             // Перевірка, чи отримані дані мають правильну структуру
+//             if (githubData && githubData.stages) {
+//                 db = githubData;
+//                 saveData(); // Збереження в localStorage
+//                 alert("Дані успішно завантажені з хмари!");
+//                 location.reload();
+//             } else {
+//                 alert("Формат файлу на GitHub невірний!");
+//             }
+//         } else { 
+//             alert("Помилка завантаження: " + response.status); 
+//         }
+//     } catch (e) { 
+//         console.error(e);
+//         alert("Помилка мережі або доступу до GitHub!"); 
+//     }
+// }
+
+// async function loadFromGitHub() {
+//     const url = 'https://raw.githubusercontent.com/IgorHQ/carrera-racing/refs/heads/main/data.json';
+    
+//     try {
+//         console.log("Attempting to fetch data from:", url);
+//         const response = await fetch(url, {
+//             method: 'GET',
+//             mode: 'cors', // Явно вказуємо CORS
+//             cache: 'no-cache'
+//         });
+
+//         if (!response.ok) {
+//             throw new Error(`HTTP error! status: ${response.status}`);
+//         }
+
+//         const githubData = await response.json();
+        
+//         if (githubData && githubData.stages) {
+//             // Оновлюємо глобальну змінну db
+//             db = githubData;
+            
+//             // Зберігаємо в LocalStorage
+//             localStorage.setItem('carreraDB', JSON.stringify(db));
+            
+//             alert("Дані успішно завантажені з GitHub!");
+            
+//             // Перезавантажуємо сторінку для оновлення інтерфейсу
+//             window.location.reload();
+//         } else {
+//             alert("Формат файлу на GitHub невірний (відсутнє поле stages)!");
+//         }
+//     } catch (e) { 
+//         console.error("Full error details:", e);
+//         alert(`Помилка: ${e.message}. Перевірте консоль (F12) для деталей.`); 
+//     }
+// }
 async function loadFromGitHub() {
     const url = 'https://raw.githubusercontent.com/IgorHQ/carrera-racing/refs/heads/main/data.json';
     try {
-        const response = await fetch(url);
-        if (response.ok) {
-            const githubData = await response.json();
-            
-            // Перевірка, чи отримані дані мають правильну структуру
+        console.log("Attempting to fetch data from:", url);
+        const response = await fetch(url, { cache: 'no-cache' });
+
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+        const text = await response.text(); // Спочатку отримуємо текст
+        
+        try {
+            const githubData = JSON.parse(text); // Намагаємось розпарсити
             if (githubData && githubData.stages) {
                 db = githubData;
                 saveData(); // Збереження в localStorage
-                alert("Дані успішно завантажені з хмари!");
+                alert("Дані успішно завантажені!");
                 location.reload();
-            } else {
-                alert("Формат файлу на GitHub невірний!");
             }
-        } else { 
-            alert("Помилка завантаження: " + response.status); 
+        } catch (jsonErr) {
+            console.error("JSON Syntax Error:", jsonErr);
+            alert("Помилка у форматі файлу JSON на GitHub. Перевірте зайві коми!");
         }
+
     } catch (e) { 
-        console.error(e);
+        console.error("Network/Fetch error:", e);
         alert("Помилка мережі або доступу до GitHub!"); 
     }
 }
