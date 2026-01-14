@@ -95,6 +95,7 @@ function checkAuth() {
         
         // --- ДОДАНО ТУТ ---
         updatePilotsDirectoryUI(); 
+        updateCarsDirectoryUI();
         // ------------------
 
         if (db.stages.length > 0) {
@@ -152,7 +153,14 @@ function updateAdminUI() {
                 <input type="checkbox" id="active-${i}" checked style="width:20px; height:20px; cursor:pointer;">
                 <span style="width:120px; color:#333; font-weight:bold; overflow:hidden; text-overflow:ellipsis;">${p.name}</span>
                 <input type="number" id="place-${i}" placeholder="Місце" style="width:60px; padding:5px;">
-                <input type="text" id="car-${i}" placeholder="car.jpg" style="flex:1; padding:5px;">
+                <select id="car-${i}" style="flex:1; padding:5px; border-radius:4px; border:1px solid #ccc;">
+    <option value="">-- Оберіть авто --</option>
+    ${(db.cars_directory || []).map(car => `
+        <option value="${car.photo}" ${p.carPhotos[p.carPhotos.length-1] === car.photo ? 'selected' : ''}>
+            ${car.name}
+        </option>
+    `).join('')}
+</select>
             </div>`).join('');
     }
 }
@@ -293,6 +301,41 @@ function exportDatabase() {
     link.href = URL.createObjectURL(blob);
     link.download = 'data.json';
     link.click();
+}
+
+function updateCarsDirectoryUI() {
+    const listContainer = document.getElementById('admin-cars-list');
+    if (!listContainer) return;
+    if (!db.cars_directory) db.cars_directory = []; // Захист від порожньої бази
+
+    listContainer.innerHTML = db.cars_directory.map((car, index) => `
+        <div style="display: flex; align-items: center; background: white; padding: 5px 10px; border-radius: 20px; border: 1px solid #ddd; gap: 8px;">
+            <img src="img/${car.photo}" style="width: 25px; height: 25px; border-radius: 4px; object-fit: cover;">
+            <span style="font-size: 0.85rem;">${car.name}</span>
+            <button onclick="deleteCar(${index})" style="background:none; border:none; color:red; cursor:pointer;">&times;</button>
+        </div>
+    `).join('');
+}
+
+function addNewCar() {
+    const name = document.getElementById('newCarName').value.trim();
+    const photo = document.getElementById('newCarPhoto').value.trim();
+    if (!name || !photo) return alert("Заповніть назву та назву файлу фото!");
+    
+    if (!db.cars_directory) db.cars_directory = [];
+    db.cars_directory.push({ name, photo });
+    saveData();
+    updateCarsDirectoryUI();
+    document.getElementById('newCarName').value = '';
+    document.getElementById('newCarPhoto').value = '';
+}
+
+function deleteCar(index) {
+    if (confirm("Видалити це авто з галереї?")) {
+        db.cars_directory.splice(index, 1);
+        saveData();
+        updateCarsDirectoryUI();
+    }
 }
 
 // РЕНДЕРИНГ (index.html)

@@ -30,6 +30,15 @@
                     <div id="admin-pilots-list" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
                         </div>
                 </div>
+                <div style="background: #fdf2f2; padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #eccaca;">
+                    <h3>🚗 Галерея автомобілів</h3>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+                        <input type="text" id="newCarName" placeholder="Назва авто (напр. BMW)" style="flex: 2; padding: 10px;">
+                        <input type="text" id="newCarPhoto" placeholder="file_name.jpg" style="flex: 1; padding: 10px;">
+                        <button onclick="addNewCar()" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">ДОДАТИ АВТО</button>
+                    </div>
+                    <div id="admin-cars-list" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+                </div>
                 <h3>1. Створити новий етап</h3>
                 <input type="text" id="newTrackName" placeholder="Назва траси (напр: Silverstone)" style="width: 100%; padding: 10px; margin-bottom: 10px; box-sizing: border-box;">
                 <input type="text" id="newTrackImg" placeholder="Файл траси (напр: track1.png)" style="width: 100%; padding: 10px; margin-bottom: 10px; box-sizing: border-box;">
