@@ -85,18 +85,38 @@ async function loadFromGitHub() {
 }
 
 // --- АДМІНКА ---
+
 function checkAuth() {
     const u = document.getElementById('user').value;
     const p = document.getElementById('pass').value;
     if (u === 'admin' && p === 'admin') {
         document.getElementById('login-block').style.display = 'none';
         document.getElementById('admin-content').style.display = 'block';
+        
+        // --- ДОДАНО ТУТ ---
+        updatePilotsDirectoryUI(); 
+        // ------------------
+
         if (db.stages.length > 0) {
             selectedStageId = db.stages[db.stages.length - 1].id;
             updateAdminUI();
         }
     } else { alert('Невірний пароль!'); }
 }
+
+
+// function checkAuth() {
+//     const u = document.getElementById('user').value;
+//     const p = document.getElementById('pass').value;
+//     if (u === 'admin' && p === 'admin') {
+//         document.getElementById('login-block').style.display = 'none';
+//         document.getElementById('admin-content').style.display = 'block';
+//         if (db.stages.length > 0) {
+//             selectedStageId = db.stages[db.stages.length - 1].id;
+//             updateAdminUI();
+//         }
+//     } else { alert('Невірний пароль!'); }
+// }
 
 // function updateAdminUI() {
 //     const selector = document.getElementById('stageSelector');
@@ -169,6 +189,37 @@ function createNewStage() {
 //     });
 //     stage.racesCount++; saveData(); updateAdminUI(); alert("Збережено!");
 // }
+
+function syncStagePilots() {
+    const stage = getStageById(selectedStageId);
+    if (!stage) return;
+
+    let addedCount = 0;
+
+    db.pilots_directory.forEach(directoryPilot => {
+        // Перевіряємо, чи пілот вже є в цьому етапі
+        const exists = stage.pilots.find(p => p.name === directoryPilot.name);
+        
+        if (!exists) {
+            // Додаємо нового пілота з порожньою історією, як це робить createNewStage
+            stage.pilots.push({
+                ...directoryPilot,
+                totalPoints: 0,
+                carPhotos: [],
+                pointsHistory: []
+            });
+            addedCount++;
+        }
+    });
+
+    if (addedCount > 0) {
+        saveData();
+        updateAdminUI();
+        alert(`Додано нових пілотів: ${addedCount}`);
+    } else {
+        alert("Всі пілоти з довідника вже присутні в цьому етапі.");
+    }
+}
 
 function saveRace() {
     const stage = getStageById(selectedStageId);
@@ -327,6 +378,56 @@ function exportDatabase() {
 //     modal.style.display = "flex";
 // }
 
+// --- КЕРУВАННЯ ПІЛОТАМИ ---
+
+// Функція оновлення списку пілотів в адмінці
+function updatePilotsDirectoryUI() {
+    const listContainer = document.getElementById('admin-pilots-list');
+    if (!listContainer) return;
+
+    listContainer.innerHTML = db.pilots_directory.map((p, index) => `
+        <div style="display: flex; align-items: center; background: white; padding: 5px 10px; border-radius: 20px; border: 1px solid #ddd; gap: 8px;">
+            <img src="img/${p.photo}" style="width: 25px; height: 25px; border-radius: 50%; object-fit: cover;">
+            <span style="font-size: 0.9rem; font-weight: bold;">${p.name}</span>
+            <button onclick="deletePilot(${index})" style="background: none; border: none; color: #dc3545; cursor: pointer; font-weight: bold; padding: 0 5px;">&times;</button>
+        </div>
+    `).join('');
+}
+
+// Додавання нового пілота
+function addNewPilot() {
+    const name = document.getElementById('newPilotName').value.trim();
+    const photo = document.getElementById('newPilotPhoto').value.trim() || 'driver-default.jpg';
+
+    if (!name) return alert("Введіть ім'я пілота!");
+
+    // Перевірка чи немає вже такого імені
+    if (db.pilots_directory.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+        return alert("Пілот з таким ім'ям вже існує!");
+    }
+
+    db.pilots_directory.push({ name, photo });
+    saveData();
+    
+    // Очищуємо поля
+    document.getElementById('newPilotName').value = '';
+    document.getElementById('newPilotPhoto').value = '';
+    
+    updatePilotsDirectoryUI();
+    // Якщо вже є створений етап, можна перезавантажити сторінку або 
+    // попередити, що зміни запрацюють для НОВИХ етапів
+    alert("Пілота додано до довідника!");
+}
+
+// Видалення пілота з довідника
+function deletePilot(index) {
+    if (confirm(`Видалити пілота ${db.pilots_directory[index].name} з довідника? (Це не вплине на вже створені етапи)`)) {
+        db.pilots_directory.splice(index, 1);
+        saveData();
+        updatePilotsDirectoryUI();
+    }
+}
+
 function renderMainPage() {
     const board = document.getElementById('leaderboard');
     if (!board) return;
@@ -404,7 +505,11 @@ function renderMainPage() {
             <h3>Рейтинг пілотів етапу</h3>
             <div class="pilots-grid">
             
-                ${[...stage.pilots].sort((a, b) => b.totalPoints - a.totalPoints).map((p, i) => {
+               
+            ${[...stage.pilots]
+                .filter(p => p.pointsHistory.length > 0) // <--- ЦЕЙ РЯДОК ТРЕБА ДОДАТИ
+                .sort((a, b) => b.totalPoints - a.totalPoints)
+                    .map((p, i) => {
                     const carGroups = {};
                     p.carPhotos.forEach((img, idx) => {
                         if (!carGroups[img]) carGroups[img] = [];

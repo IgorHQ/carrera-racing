@@ -20,6 +20,16 @@
             <h1 style="border-bottom: 2px solid #e30613; padding-bottom: 10px;">Керування чемпіонатом</h1>
 
             <div style="background: #fff3f3; padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #ffcccc;">
+                <div style="background: #eef2f7; padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #ccd1d9;">
+                    <h3>👤 Керування пілотами</h3>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <input type="text" id="newPilotName" placeholder="Ім'я пілота" style="flex: 2; padding: 10px;">
+                        <input type="text" id="newPilotPhoto" placeholder="фото.jpg" style="flex: 1; padding: 10px;">
+                        <button onclick="addNewPilot()" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">ДОДАТИ</button>
+                    </div>
+                    <div id="admin-pilots-list" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
+                        </div>
+                </div>
                 <h3>1. Створити новий етап</h3>
                 <input type="text" id="newTrackName" placeholder="Назва траси (напр: Silverstone)" style="width: 100%; padding: 10px; margin-bottom: 10px; box-sizing: border-box;">
                 <input type="text" id="newTrackImg" placeholder="Файл траси (напр: track1.png)" style="width: 100%; padding: 10px; margin-bottom: 10px; box-sizing: border-box;">
@@ -36,7 +46,9 @@
 
             <div id="active-stage-controls" style="display: none;">
                 <h2 id="current-st-name" style="color: #e30613;"></h2>
-                
+                <button onclick="syncStagePilots()" style="margin-bottom: 15px; padding: 8px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.8rem;">
+                    🔄 Оновити список пілотів з довідника
+                </button>
                 <h3>3. Результати заїзду</h3>
                 <p style="font-size: 0.8rem; color: #666; margin-bottom: 10px;">Відмітьте пілотів, які брали участь у цьому заїзді:</p>
                 <div id="pilots-list-for-results"></div>
